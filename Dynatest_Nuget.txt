@@ -1,0 +1,5 @@
+C:\Dev\Experimental\.nuget\nuget.exe pack GMap.NET.Core.csproj -Prop Configuration=Release
+C:\Dev\Experimental\.nuget\nuget.exe push -Source "dynatestnuget" -ApiKey VSTS .\GMap.NET.Core.1.7.6.nupkg
+
+C:\Dev\Experimental\.nuget\nuget.exe pack GMap.NET.WindowsForms.csproj -Prop Configuration=Release
+C:\Dev\Experimental\.nuget\nuget.exe push -Source "dynatestnuget" -ApiKey VSTS .\GMap.NET.WindowsForms.1.7.6.nupkg

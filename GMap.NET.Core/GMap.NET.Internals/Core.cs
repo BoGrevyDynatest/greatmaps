@@ -1310,15 +1310,19 @@ namespace GMap.NET.Internals
                     FailedLoads = null;
                 }
 
-                tileDrawingListLock.AcquireWriterLock();
-                try
-                {
-                    tileDrawingList.Clear();
-                }
-                finally
-                {
-                    tileDrawingListLock.ReleaseWriterLock();
-                }
+               if (tileDrawingListLock != null)
+               {
+
+                  tileDrawingListLock.AcquireWriterLock();
+                  try
+                  {
+                     tileDrawingList.Clear();
+                  }
+                  finally
+                  {
+                     tileDrawingListLock.ReleaseWriterLock();
+                  }
+               }
 
 #if NET40
                 //TODO: maybe
