@@ -68,7 +68,7 @@ namespace GMap.NET.Internals
         FastResourceLock pLock;
 #endif
 
-      static readonly bool UseNativeSRWLock = Stuff.IsRunningOnVistaOrLater() && IntPtr.Size == 4; // works only in 32-bit mode, any ideas on native 64-bit support? 
+        static readonly bool UseNativeSRWLock = Stuff.IsRunningOnVistaOrLater() && IntPtr.Size == 4; // works only in 32-bit mode, any ideas on native 64-bit support? 
 
 #endif
 
@@ -88,7 +88,7 @@ namespace GMap.NET.Internals
 #endif
             {
 #if UseFastResourceLock
-            pLock.AcquireShared();
+                pLock.AcquireShared();
 #else
             Thread.BeginCriticalRegion();
 
@@ -134,16 +134,19 @@ namespace GMap.NET.Internals
 
         public void AcquireWriterLock()
         {
+            try
+            {
 #if !MONO && !PocketPC
-            if (UseNativeSRWLock)
-            {
-                NativeMethods.AcquireSRWLockExclusive(ref LockSRW);
-            }
-            else
+                if (UseNativeSRWLock)
+                {
+                    NativeMethods.AcquireSRWLockExclusive(ref LockSRW);
+                }
+                else
 #endif
-            {
+                {
 #if UseFastResourceLock
-                pLock.AcquireExclusive();
+                    if (pLock != null)
+                       pLock.AcquireExclusive();
 #else
             Thread.BeginCriticalRegion();
 
@@ -157,11 +160,20 @@ namespace GMap.NET.Internals
                Thread.Sleep(1);
             }
 #endif
+                }
             }
+            catch
+            {
+                //
+            }
+
         }
 
         public void ReleaseWriterLock()
         {
+           try
+           {
+
 #if !MONO && !PocketPC
             if (UseNativeSRWLock)
             {
@@ -171,17 +183,22 @@ namespace GMap.NET.Internals
 #endif
             {
 #if UseFastResourceLock
-                pLock.ReleaseExclusive();
+               if (pLock != null)
+                  pLock.ReleaseExclusive();
 #else
             Interlocked.Exchange(ref busy, 0);
             Thread.EndCriticalRegion();
 #endif
             }
+           }
+           catch
+           {
+           }
         }
 
-        #region IDisposable Members
+      #region IDisposable Members
 
-        public void Dispose()
+      public void Dispose()
         {
 #if UseFastResourceLock
             this.Dispose(true);

@@ -1313,14 +1313,15 @@ namespace GMap.NET.Internals
                if (tileDrawingListLock != null)
                {
 
-                  tileDrawingListLock.AcquireWriterLock();
+                  
                   try
                   {
-                     tileDrawingList.Clear();
+                     tileDrawingListLock.AcquireWriterLock();
+                        tileDrawingList.Clear();
                   }
                   finally
                   {
-                     tileDrawingListLock.ReleaseWriterLock();
+                     if (tileDrawingListLock != null) tileDrawingListLock.ReleaseWriterLock();
                   }
                }
 
